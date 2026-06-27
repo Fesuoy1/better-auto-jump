@@ -8,7 +8,8 @@
 		"Fesuoy"
 	],
 	"contact": {
-		"sources": "https://github.com/Fesuoy1/better-auto-jump"
+		"sources": "https://github.com/Fesuoy1/better-auto-jump",
+		"issues": "https://github.com/Fesuoy1/better-auto-jump/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/better-auto-jump/icon.png",
@@ -23,6 +24,14 @@
 		"modmenu": [
 			"fesuoy.client.gui.ModMenuIntegration"
 		]
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.modrinth": "https://modrinth.com/mod/better-auto-jump",
+				"modmenu.github_releases": "https://github.com/Fesuoy1/better-auto-jump/releases"
+			}
+		}
 	},
 	"mixins": [
 		"better-auto-jump.client.mixins.json"
