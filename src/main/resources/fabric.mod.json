@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "better-auto-jump",
+	"version": "${version}",
+	"name": "Better Auto-Jump",
+	"description": "Improves auto-jump and adds optional edge jumping for parkouring.",
+	"authors": [
+		"Fesuoy"
+	],
+	"contact": {
+		"sources": "https://github.com/Fesuoy1/better-auto-jump"
+	},
+	"license": "MIT",
+	"icon": "assets/better-auto-jump/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"fesuoy.BetterAutoJump"
+		],
+		"client": [
+			"fesuoy.client.BetterAutoJumpClient"
+		],
+		"modmenu": [
+			"fesuoy.client.gui.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"better-auto-jump.client.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.0",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"recommends": {
+		"modmenu": "*"
+	}
+}
