@@ -21,7 +21,7 @@ public class BetterAutoJumpClient implements ClientModInitializer {
 
             if (EdgeDetector.detect(client.player, client.level)) {
                 SprintManager.record(client.player.isSprinting());
-                // force variance on servers to prevent anticheat flags
+                // force variance on servers to prevent/minimize anticheat flags
                 int variance = client.isLocalServer() ? config.varianceTicks : Math.max(1, config.varianceTicks);
                 JumpTrigger.set(variance);
             }
