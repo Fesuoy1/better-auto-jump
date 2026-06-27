@@ -17,9 +17,9 @@ public class BetterAutoJumpConfig {
 
     public boolean enabled = true;
     public boolean obstacleJumpEnabled = true;
-    public boolean edgeJumpEnabled = true;
+    public boolean edgeJumpEnabled = false;
     public int varianceTicks = 1;
-    public int cooldownTicks = 3;
+    public int cooldownTicks = 1;
 
     // Edge detection parameters
     public double edgeScanMaxDistSprint = 2.0;

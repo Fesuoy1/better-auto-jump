@@ -5,7 +5,7 @@ A Minecraft Fabric mod that replaces and vastly improves the vanilla auto-jump s
 ## Features
 
 - **Improved Auto-Jump** -- Predicts collisions in the direction of movement and automatically jumps over blocks up to a configurable height. Accounts for the Jump Boost potion effect and respects an angle threshold so you only jump over blocks in your general path.
-- **Edge Jumping (Parkour Helper)** -- Detects when you're approaching the edge of a block while moving forward and triggers a jump just before the edge. Includes built-in presets and full parameter customization.
+- **Edge Jumping (Parkour Helper)** -- Detects when you're approaching the edge of a block while moving forward and triggers a jump just before the edge. Includes built-in presets and full parameter customization. (Disabled by default, enable in mod's settings)
 - **Sprint Persistence** -- Maintains sprinting momentum through auto-jumps.
 
 ## Installation
