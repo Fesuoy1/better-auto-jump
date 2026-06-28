@@ -30,7 +30,8 @@
 			"links": {
 				"modmenu.modrinth": "https://modrinth.com/mod/better-auto-jump",
 				"modmenu.github_releases": "https://github.com/Fesuoy1/better-auto-jump/releases"
-			}
+			},
+			"update_checker": true
 		}
 	},
 	"mixins": [
