@@ -1,7 +1,7 @@
 package fesuoy.client.gui;
 
-import fesuoy.autojump.JumpTrigger;
 import fesuoy.config.BetterAutoJumpConfig;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
@@ -9,8 +9,10 @@ import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import java.util.List;
+import java.util.function.IntConsumer;
 
 public class BetterAutoJumpScreen extends Screen {
 
@@ -24,8 +26,6 @@ public class BetterAutoJumpScreen extends Screen {
     private Button edgeSettingsButton;
     private Button obstacleVarianceButton;
     private Button obstacleCooldownButton;
-    private Button varianceButton;
-    private Button cooldownButton;
     private GridLayout layout;
 
     protected BetterAutoJumpScreen(Screen parent) {
@@ -37,7 +37,7 @@ public class BetterAutoJumpScreen extends Screen {
     protected void init() {
         this.config = BetterAutoJumpConfig.getInstance();
 
-        this.layout = new GridLayout().columnSpacing(10).rowSpacing(8);
+        this.layout = new GridLayout().columnSpacing(10).rowSpacing(6);
         layout.defaultCellSetting().alignHorizontallyCenter();
         var grid = layout.createRowHelper(2);
 
@@ -50,35 +50,18 @@ public class BetterAutoJumpScreen extends Screen {
                     btn.setMessage(toggleLabel("Enabled", config.enabled));
                     updateButtons();
                 }
-        ).width(200).tooltip(Tooltip.create(Component.literal("Master toggle for all Better Auto-Jump features"))).build();
-        grid.addChild(masterToggle);
+        ).width(410).tooltip(Tooltip.create(Component.literal("Master toggle for all Better Auto-Jump features"))).build();
+        grid.addChild(masterToggle, 2);
 
         obstacleToggle = Button.builder(
                 toggleLabel("Obstacle Jump", config.obstacleJumpEnabled),
                 btn -> {
                     config.obstacleJumpEnabled = !config.obstacleJumpEnabled;
                     btn.setMessage(toggleLabel("Obstacle Jump", config.obstacleJumpEnabled));
+                    updateButtons();
                 }
         ).width(200).tooltip(Tooltip.create(Component.literal("Automatically jumps over blocks up to jump height"))).build();
         grid.addChild(obstacleToggle);
-
-        obstacleVarianceButton = Button.builder(
-                toggleLabel("Obstacle Variance", config.obstacleVarianceEnabled),
-                btn -> {
-                    config.obstacleVarianceEnabled = !config.obstacleVarianceEnabled;
-                    btn.setMessage(toggleLabel("Obstacle Variance", config.obstacleVarianceEnabled));
-                }
-        ).width(200).tooltip(Tooltip.create(Component.literal("Apply random delay before obstacle jumps (uses Variance value above)"))).build();
-        grid.addChild(obstacleVarianceButton);
-
-        obstacleCooldownButton = Button.builder(
-                toggleLabel("Obstacle Cooldown", config.obstacleCooldownEnabled),
-                btn -> {
-                    config.obstacleCooldownEnabled = !config.obstacleCooldownEnabled;
-                    btn.setMessage(toggleLabel("Obstacle Cooldown", config.obstacleCooldownEnabled));
-                }
-        ).width(200).tooltip(Tooltip.create(Component.literal("Apply cooldown between consecutive obstacle jumps (uses Cooldown value above)"))).build();
-        grid.addChild(obstacleCooldownButton);
 
         edgeToggle = Button.builder(
                 toggleLabel("Edge Jump", config.edgeJumpEnabled),
@@ -88,6 +71,34 @@ public class BetterAutoJumpScreen extends Screen {
                 }
         ).width(200).tooltip(Tooltip.create(Component.literal("Automatically jumps when approaching a block edge while moving"))).build();
         grid.addChild(edgeToggle);
+
+        grid.addChild(new StringWidget(Component.literal("\u00a7lTiming"), this.font), 2);
+
+        addIntSlider(grid, "Variance", config.varianceTicks, 0, 5, 1,
+                v -> config.varianceTicks = v);
+
+        addIntSlider(grid, "Cooldown", config.cooldownTicks, 1, 10, 1,
+                v -> config.cooldownTicks = v);
+
+        obstacleVarianceButton = Button.builder(
+                toggleLabel("Obstacle Variance", config.obstacleVarianceEnabled),
+                btn -> {
+                    config.obstacleVarianceEnabled = !config.obstacleVarianceEnabled;
+                    btn.setMessage(toggleLabel("Obstacle Variance", config.obstacleVarianceEnabled));
+                }
+        ).width(200).tooltip(Tooltip.create(Component.literal("Apply random delay before obstacle jumps"))).build();
+        grid.addChild(obstacleVarianceButton);
+
+        obstacleCooldownButton = Button.builder(
+                toggleLabel("Obstacle Cooldown", config.obstacleCooldownEnabled),
+                btn -> {
+                    config.obstacleCooldownEnabled = !config.obstacleCooldownEnabled;
+                    btn.setMessage(toggleLabel("Obstacle Cooldown", config.obstacleCooldownEnabled));
+                }
+        ).width(200).tooltip(Tooltip.create(Component.literal("Apply cooldown between consecutive obstacle jumps"))).build();
+        grid.addChild(obstacleCooldownButton);
+
+        grid.addChild(new StringWidget(Component.literal("\u00a7lDetection"), this.font), 2);
 
         presetButton = Button.builder(
                 Component.literal("Preset: " + config.edgePreset),
@@ -105,27 +116,8 @@ public class BetterAutoJumpScreen extends Screen {
         edgeSettingsButton = Button.builder(
                 Component.literal("Advanced Settings..."),
                 btn -> this.minecraft.gui.setScreen(new BetterAutoJumpEdgeScreen(this))
-        ).width(200).tooltip(Tooltip.create(Component.literal("Fine-tune edge and obstacle detection parameters, save custom presets"))).build();
-        grid.addChild(edgeSettingsButton, 2);
-
-        varianceButton = Button.builder(
-                varianceLabel(config.varianceTicks),
-                btn -> {
-                    config.varianceTicks = (config.varianceTicks + 1) % 6;
-                    btn.setMessage(varianceLabel(config.varianceTicks));
-                }
-        ).width(200).tooltip(Tooltip.create(Component.literal("Random delay before edge jump (0-5 ticks) to vary timing"))).build();
-        grid.addChild(varianceButton);
-
-        cooldownButton = Button.builder(
-                cooldownLabel(config.cooldownTicks),
-                btn -> {
-                    config.cooldownTicks = config.cooldownTicks >= 10 ? 1 : config.cooldownTicks + 1;
-                    btn.setMessage(cooldownLabel(config.cooldownTicks));
-                    JumpTrigger.setCooldownMax(config.cooldownTicks);
-                }
-        ).width(200).tooltip(Tooltip.create(Component.literal("Minimum ticks between consecutive edge jumps"))).build();
-        grid.addChild(cooldownButton);
+        ).width(200).tooltip(Tooltip.create(Component.literal("Fine-tune detection parameters, save custom presets"))).build();
+        grid.addChild(edgeSettingsButton);
 
         grid.addChild(Button.builder(
                 Component.literal("Save & Close"),
@@ -151,6 +143,7 @@ public class BetterAutoJumpScreen extends Screen {
     protected void repositionElements() {
         layout.arrangeElements();
         layout.setPosition((width - layout.getWidth()) / 2, (height - layout.getHeight()) / 2);
+        presetButton.setMessage(Component.literal("Preset: " + config.edgePreset));
     }
 
     private void updateButtons() {
@@ -162,20 +155,34 @@ public class BetterAutoJumpScreen extends Screen {
         edgeToggle.active = anyEnabled;
         presetButton.active = anyEnabled;
         edgeSettingsButton.active = anyEnabled;
-        varianceButton.active = anyEnabled;
-        cooldownButton.active = anyEnabled;
+    }
+
+    private void addIntSlider(GridLayout.RowHelper grid, String label, int current,
+                              int min, int max, int step, IntConsumer setter) {
+        double range = max - min;
+        double initial = range > 0 ? (current - min) / range : 0.0;
+        grid.addChild(new AbstractSliderButton(0, 0, 410, 20,
+                Component.literal(label + ": " + current + " tick" + (current == 1 ? "" : "s")), initial) {
+            {
+                updateMessage();
+            }
+
+            @Override
+            protected void updateMessage() {
+                int val = (int) Math.round(min + Mth.clamp(this.value, 0.0, 1.0) * range);
+                this.setMessage(Component.literal(label + ": " + val + " tick" + (val == 1 ? "" : "s")));
+            }
+
+            @Override
+            protected void applyValue() {
+                int val = (int) Math.round(min + Mth.clamp(this.value, 0.0, 1.0) * range);
+                setter.accept(val);
+            }
+        }, 2);
     }
 
     private static Component toggleLabel(String name, boolean value) {
         return Component.literal(name + ": " + (value ? "ON" : "OFF"));
-    }
-
-    private static Component varianceLabel(int ticks) {
-        return Component.literal("Variance: " + ticks + " tick" + (ticks == 1 ? "" : "s"));
-    }
-
-    private static Component cooldownLabel(int ticks) {
-        return Component.literal("Cooldown: " + ticks + " tick" + (ticks == 1 ? "" : "s"));
     }
 
     @Override
