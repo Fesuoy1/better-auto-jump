@@ -3,8 +3,6 @@ package fesuoy;
 import fesuoy.config.BetterAutoJumpConfig;
 import net.fabricmc.api.ModInitializer;
 
-import net.minecraft.resources.Identifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

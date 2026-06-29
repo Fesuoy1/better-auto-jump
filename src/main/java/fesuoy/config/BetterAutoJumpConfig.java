@@ -166,17 +166,6 @@ public class BetterAutoJumpConfig {
         }
     }
 
-    public EdgePreset resolveEdgePreset() {
-        for (EdgePreset p : EdgePreset.values()) {
-            if (p.displayName.equals(edgePreset)) return p;
-        }
-        // Try matching enum name too (backwards compat)
-        for (EdgePreset p : EdgePreset.values()) {
-            if (p.name().equals(edgePreset)) return p;
-        }
-        return EdgePreset.DEFAULT;
-    }
-
     public void applyEdgePreset(EdgePreset preset) {
         edgeScanMaxDistSprint = preset.scanMaxDistSprint;
         edgeScanMaxDistWalk = preset.scanMaxDistWalk;
