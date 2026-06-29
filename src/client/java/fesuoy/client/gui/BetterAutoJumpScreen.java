@@ -22,6 +22,8 @@ public class BetterAutoJumpScreen extends Screen {
     private Button edgeToggle;
     private Button presetButton;
     private Button edgeSettingsButton;
+    private Button obstacleVarianceButton;
+    private Button obstacleCooldownButton;
     private Button varianceButton;
     private Button cooldownButton;
     private GridLayout layout;
@@ -59,6 +61,24 @@ public class BetterAutoJumpScreen extends Screen {
                 }
         ).width(200).tooltip(Tooltip.create(Component.literal("Automatically jumps over blocks up to jump height"))).build();
         grid.addChild(obstacleToggle);
+
+        obstacleVarianceButton = Button.builder(
+                toggleLabel("Obstacle Variance", config.obstacleVarianceEnabled),
+                btn -> {
+                    config.obstacleVarianceEnabled = !config.obstacleVarianceEnabled;
+                    btn.setMessage(toggleLabel("Obstacle Variance", config.obstacleVarianceEnabled));
+                }
+        ).width(200).tooltip(Tooltip.create(Component.literal("Apply random delay before obstacle jumps (uses Variance value above)"))).build();
+        grid.addChild(obstacleVarianceButton);
+
+        obstacleCooldownButton = Button.builder(
+                toggleLabel("Obstacle Cooldown", config.obstacleCooldownEnabled),
+                btn -> {
+                    config.obstacleCooldownEnabled = !config.obstacleCooldownEnabled;
+                    btn.setMessage(toggleLabel("Obstacle Cooldown", config.obstacleCooldownEnabled));
+                }
+        ).width(200).tooltip(Tooltip.create(Component.literal("Apply cooldown between consecutive obstacle jumps (uses Cooldown value above)"))).build();
+        grid.addChild(obstacleCooldownButton);
 
         edgeToggle = Button.builder(
                 toggleLabel("Edge Jump", config.edgeJumpEnabled),
@@ -135,7 +155,10 @@ public class BetterAutoJumpScreen extends Screen {
 
     private void updateButtons() {
         boolean anyEnabled = config.enabled;
+        boolean obstacleActive = anyEnabled && config.obstacleJumpEnabled;
         obstacleToggle.active = anyEnabled;
+        obstacleVarianceButton.active = obstacleActive;
+        obstacleCooldownButton.active = obstacleActive;
         edgeToggle.active = anyEnabled;
         presetButton.active = anyEnabled;
         edgeSettingsButton.active = anyEnabled;

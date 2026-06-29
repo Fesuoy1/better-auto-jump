@@ -1,5 +1,6 @@
 package fesuoy.client.mixin;
 
+import fesuoy.autojump.JumpTrigger;
 import fesuoy.client.autojump.ImprovedAutoJump;
 import fesuoy.autojump.SprintManager;
 import fesuoy.config.BetterAutoJumpConfig;
@@ -25,10 +26,18 @@ public abstract class LocalPlayerMixin {
     public void updateAutoJump(float dx, float dz) {
         if (canAutoJump() && BetterAutoJumpConfig.getInstance().enabled && BetterAutoJumpConfig.getInstance().obstacleJumpEnabled) {
             LocalPlayer player = (LocalPlayer) (Object) this;
+            BetterAutoJumpConfig cfg = BetterAutoJumpConfig.getInstance();
+
             if (ImprovedAutoJump.autojumpPlayer(player, dx, dz)) {
+                int variance = cfg.obstacleVarianceEnabled ? cfg.varianceTicks : 0;
+                JumpTrigger.setObstacle(variance);
+            }
+
+            if (JumpTrigger.consumeObstacleJump()) {
                 SprintManager.record(player.isSprinting());
                 autoJumpTime = 1;
-            } else {
+                JumpTrigger.setObstacleCooldown(cfg.obstacleCooldownEnabled ? cfg.cooldownTicks : 0);
+            } else if (!JumpTrigger.isObstaclePending()) {
                 autoJumpTime = 0;
             }
         }
