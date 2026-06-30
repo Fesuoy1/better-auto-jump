@@ -22,6 +22,7 @@ public class BetterAutoJumpEdgeScreen extends Screen {
     private BetterAutoJumpConfig config;
     private Button presetButton;
     private EditBox presetNameBox;
+    private Button saveCloseButton;
 
     protected BetterAutoJumpEdgeScreen(Screen parent) {
         super(Component.literal("Detection Settings"));
@@ -95,7 +96,8 @@ public class BetterAutoJumpEdgeScreen extends Screen {
         grid.addChild(new StringWidget(Component.literal("§lSave Custom Preset"), this.font));
 
         presetNameBox = new EditBox(this.font, 280, 20, Component.literal("Preset name"));
-        presetNameBox.setMaxLength(32);
+        presetNameBox.setMaxLength(64);
+        presetNameBox.setResponder(text -> updateSaveCloseButton());
         grid.addChild(presetNameBox);
 
         grid.addChild(Button.builder(
@@ -104,18 +106,21 @@ public class BetterAutoJumpEdgeScreen extends Screen {
         ).width(280).tooltip(Tooltip.create(Component.literal("Save all current detection values as a named preset"))).build());
 
         // Bottom buttons
-        grid.addChild(Button.builder(
+        saveCloseButton = Button.builder(
                 Component.literal("Save & Close"),
                 btn -> {
                     config.save();
                     this.minecraft.gui.setScreen(parent);
                 }
-        ).width(280).build());
+        ).width(280).tooltip(Tooltip.create(Component.literal("Save & Close cannot be used while a preset name is entered. Save or clear it first."))).build();
+        grid.addChild(saveCloseButton);
 
         grid.addChild(Button.builder(
                 CommonComponents.GUI_CANCEL,
                 btn -> this.minecraft.gui.setScreen(parent)
         ).width(280).build());
+
+        updateSaveCloseButton();
 
         content.arrangeElements();
 
@@ -157,7 +162,16 @@ public class BetterAutoJumpEdgeScreen extends Screen {
         config.customPresets.add(new CustomPreset(name, config));
         config.edgePreset = name;
         presetNameBox.setValue("");
+        updateSaveCloseButton();
         rebuild();
+    }
+
+    private void updateSaveCloseButton() {
+        boolean hasText = !presetNameBox.getValue().trim().isEmpty();
+        saveCloseButton.active = !hasText;
+        saveCloseButton.setTooltip(hasText
+                ? Tooltip.create(Component.literal("Save or clear the preset name first"))
+                : Tooltip.create(Component.literal("Save config and close")));
     }
 
     private void addSlider(GridLayout.RowHelper grid, String label, double current,
