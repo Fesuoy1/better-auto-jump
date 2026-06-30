@@ -117,7 +117,10 @@ public class BetterAutoJumpEdgeScreen extends Screen {
 
         grid.addChild(Button.builder(
                 CommonComponents.GUI_CANCEL,
-                btn -> this.minecraft.gui.setScreen(parent)
+                btn -> {
+                    BetterAutoJumpConfig.reload();
+                    this.minecraft.gui.setScreen(parent);
+                }
         ).width(280).build());
 
         updateSaveCloseButton();
@@ -213,6 +216,7 @@ public class BetterAutoJumpEdgeScreen extends Screen {
 
     @Override
     public void onClose() {
+        BetterAutoJumpConfig.reload();
         this.minecraft.gui.setScreen(parent);
     }
 }

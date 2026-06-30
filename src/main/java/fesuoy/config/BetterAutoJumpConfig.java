@@ -190,6 +190,10 @@ public class BetterAutoJumpConfig {
         return instance;
     }
 
+    public static void reload() {
+        instance = load();
+    }
+
     private static BetterAutoJumpConfig load() {
         if (Files.exists(CONFIG_PATH)) {
             try {

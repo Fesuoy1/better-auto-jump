@@ -129,7 +129,10 @@ public class BetterAutoJumpScreen extends Screen {
 
         grid.addChild(Button.builder(
                 CommonComponents.GUI_CANCEL,
-                btn -> this.minecraft.gui.setScreen(parent)
+                btn -> {
+                    BetterAutoJumpConfig.reload();
+                    this.minecraft.gui.setScreen(parent);
+                }
         ).width(200).tooltip(Tooltip.create(Component.literal("Discard changes and close"))).build());
 
         layout.arrangeElements();
@@ -137,13 +140,6 @@ public class BetterAutoJumpScreen extends Screen {
         layout.visitWidgets(this::addRenderableWidget);
 
         updateButtons();
-    }
-
-    @Override
-    protected void repositionElements() {
-        layout.arrangeElements();
-        layout.setPosition((width - layout.getWidth()) / 2, (height - layout.getHeight()) / 2);
-        presetButton.setMessage(Component.literal("Preset: " + config.edgePreset));
     }
 
     private void updateButtons() {
@@ -187,6 +183,7 @@ public class BetterAutoJumpScreen extends Screen {
 
     @Override
     public void onClose() {
+        BetterAutoJumpConfig.reload();
         this.minecraft.gui.setScreen(parent);
     }
 }
